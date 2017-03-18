@@ -101,22 +101,24 @@ def get_template_part(syntax_type, part):
     '''Get template header or body'''
 
     template_name = '%s.tmpl' % syntax_type
-    tmplate_path = os.path.join(
-        HEADER_PATH if part == 'header' else BODY_PATH, template_name)
+    contents = ''
 
     custom_template_path = Settings().get('custom_template_%s_path' % part)
+    data = sublime.active_window().project_data()
+    key = 'custom_template_' + part + '_path'
+    if key in data['settings']:
+        custom_template_path = data['settings'][key]
     if custom_template_path:
         path = os.path.abspath(os.path.expanduser(os.path.expandvars(
             os.path.join(custom_template_path, template_name))))
 
         if os.path.exists(path) and os.path.isfile(path):
             tmplate_path = path
-
-    try:
-        with open(tmplate_path, 'r') as f:
-            contents = f.read()
-    except:
-        contents = ''
+            try:
+                with open(tmplate_path, 'r') as f:
+                    contents = f.read()
+            except:
+                contents = ''
     return contents
 
 
